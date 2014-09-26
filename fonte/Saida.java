@@ -1,6 +1,6 @@
 class Saida{
 	
-	public Imprimir (String I[]){
+	public void Imprimir (String I[]){
 		private int a=0;
 		while(a<I.length){                                          // vai rodar o While enquanto o a não for maior que o tamanho do vetor
 			if(I[a] == ' " '){                                		//Testa se aquela parte do vetor contem aspas 
@@ -21,7 +21,7 @@ class Saida{
 		}
 	}
 	
-	public Imprimir_Linha(String I[]){                       //Função igual a imprimir, mas que imprime e da um /n no final
+	public void Imprimir_Linha(String I[]){                       //Função igual a imprimir, mas que imprime e da um /n no final
 		this.imprimir(I[]);									//chama a outra função, pois faz a mesma coisa
 		system.out.print(\n);								// da o \n
 	}
