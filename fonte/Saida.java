@@ -1,4 +1,4 @@
-class Imprimir{
+class Saida{
 	
 	public Imprimir (String I[]){
 		private int a=0;
