@@ -23,6 +23,16 @@ class Escopo {
 		return var;
 	}
 	
+	public Variavel buscaVariavel(String nome) {
+		Variavel var;
+		for (int i = 0; i < this.vars.size(); i++) {
+			if ((var = this.vars.get(i)).getNome().equals(nome)) {
+				return var;
+			}
+		}
+		return null;
+	}
+	
 	public boolean existeVariavel(String nome) {
 		// verifica se já existe uma variável no escopo com o nome informado
 		for (int i = 0; i < this.vars.size(); i++) {
