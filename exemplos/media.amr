@@ -1,0 +1,14 @@
+func principal {
+	var real a;
+	var real b;
+	var real r;
+	
+	imprima "Digite um numero: ";
+	leia_real a;
+	imprima "Digite outro numero: ";
+	leia_real b;
+	
+	r := a + b;
+	r := r / 2;
+	imprima_linha "A media eh " r;
+}
