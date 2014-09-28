@@ -7,12 +7,13 @@ class Saida {
 				for (i++; linha.charAt(i) != '"' && i < linha.length(); i++) { 		//vai imprimindo tudo que esta entre as aspas, até achar uma outra aspa
 					System.out.print(linha.charAt(i));
 				}
-			} else if (Verificador.charValidoNome(linha.charAt(i))) {   //testa se o caractere é uma letra, que caracteriza o inicio do nome da variavel 
+			} else if (Verificacao.charValidoNome(linha.charAt(i))) {   //testa se o caractere é uma letra, que caracteriza o inicio do nome da variavel 
 				String nomVar = "";												// seria a criação de um vetor char, para salvar esses caracteres
 				j = 0;
 
-				for (; (! Verificador.ehEspacoEmBranco(linha.charAt(i))) && (! Verificador.ehSimbolo(linha.charAt(i))) && i < linha.length(); i++, j++) {                         //aqui ele salva todos os caracteres seguintes, até o espaço, que seria o nome da variavel																		
-					nomVar += linha.charAt(i);													//aqui apenas salva esses caracteres na nomVar					
+				while (Verificacao.charValidoNome(linha.charAt(i)) && i < linha.length()) {                         //aqui ele salva todos os caracteres seguintes, até o espaço, que seria o nome da variavel																							nomVar += linha.charAt(i);													//aqui apenas salva esses caracteres na nomVar					
+					nomVar += linha.charAt(i);
+					i++;
 				}
 
 				Variavel var = escopo.buscaVariavel(nomVar); // passa como parâmetro a string com o nome da variavel para outro método
@@ -36,7 +37,7 @@ class Saida {
 						System.out.print("\nVariável " + nomVar + " não declarada");
 					}
 				}
-			} else if (Verificador.ehEspacoEmBranco(linha.charAt(i))) {
+			} else if (Character.isWhitespace(linha.charAt(i))) {
 				i++;
 			}
 		}

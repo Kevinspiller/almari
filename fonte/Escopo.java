@@ -72,11 +72,11 @@ class Escopo {
 			// tratamento da declaração de variáveis e funções
 			// falta verificar se as posições do vetor existem antes de tentar acessá-las
 			if (tokens[0].equals("var")) {
-				if (Verificador.tipoValido(tokens[1])) {
-					if (Verificador.nomeValido(tokens[2])) {
+				if (Verificacao.tipoValido(tokens[1])) {
+					if (Verificacao.nomeValido(tokens[2])) {
 						if (tokens[3].equals(":=")) {
 							// declaração com atribuição, verifica se o valor que está atribuindo corresponde ao tipo declarado
-							if (Verificador.valorValido(tokens[1], tokens[4])) {
+							if (Verificacao.valorValido(tokens[1], tokens[4])) {
 								// declara passando o tipo, nome e valor
 								declaraVariavel(tokens[1], tokens[2], tokens[4]);
 							} else {
@@ -97,8 +97,8 @@ class Escopo {
 					throw new IllegalArgumentException("Tipo de variável inválido: " + tokens[1]);
 				}
 			} else if (tokens[0].equals("func")) {
-				if (Verificador.tipoValido(tokens[1])) {
-					if (Verificador.nomeValido(tokens[2])) {
+				if (Verificacao.tipoValido(tokens[1])) {
+					if (Verificacao.nomeValido(tokens[2])) {
 						// declara a função
 					} else {
 						throw new IllegalArgumentException("Nome de função inválido: " + tokens[2]);

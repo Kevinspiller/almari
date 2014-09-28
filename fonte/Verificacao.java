@@ -1,26 +1,19 @@
-class Verificador {
+class Verificacao {
 	public static boolean tipoValido(String tipo) {
-		return tipo.equals("inteiro") || tipo.equals("real") || tipo.equals("caractere") || tipo.equals("palavra");
+		return tipo.equals("inteiro") || tipo.equals("real") || tipo.equals("caractere");
 	}
 
 	public static boolean charValidoNome(char chr) {
 		// retorna se o caractere informado é permitido em um nome de variável ou função
 		// {toDo}
-		return true;
+		//return chr >= 'a' && chr  <= 'z' || chr >= 'A' && chr <= 'Z' || chr >= '0' && chr <= '9' || chr == '_';
+		return Character.isLetterOrDigit(chr) || chr == '_';
 	}
 	
 	public static boolean nomeValido(String nome) {
 		if (nome.length() == 0) {
 			return false;
 		}
-		
-		/*
-		// se já existe variável ou função no escopo com o nome informado, não permite declarar
-		if (escopo.existeVariavel(nome) || escopo.existeFuncao(nome)) {
-			return false;
-		}
-		*/
-		
 		// inválido se começa com número
 		if (nome.charAt(0) >= '0' && nome.charAt(0) <= '9') {
 			return false;
@@ -33,7 +26,6 @@ class Verificador {
 		}
 		return true;
 	}
-
 
 	public static boolean valorValido(String tipo, String valor) {
 		if (tipo.equals("inteiro")) {
