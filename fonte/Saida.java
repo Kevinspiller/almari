@@ -1,6 +1,6 @@
 class Saida {
 
-	public void imprime(Escopo escopo, String linha){
+	public static void imprime(Escopo escopo, String linha){
 		int i = 0, j;
 		while (i < linha.length()) {                                          // vai rodar o While enquanto o a não for maior que o tamanho do vetor
 			if (linha.charAt(i) == '"') { //Testa se aquela parte do vetor (token) contém aspas 
@@ -43,8 +43,8 @@ class Saida {
 		}
 	}
 	
-	public void imprimeLinha(Escopo escopo, String linha){ // Método igual ao imprime, mas que imprime e da um /n no final
-		this.imprime(escopo, linha);						 // chama o outro método, pois faz a mesma coisa
+	public static void imprimeLinha(Escopo escopo, String linha){ // Método igual ao imprime, mas que imprime e da um /n no final
+		imprime(escopo, linha);						 // chama o outro método, pois faz a mesma coisa
 		System.out.print("\n");							 // da o \n
 	}
 }

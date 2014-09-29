@@ -49,23 +49,25 @@ class Escopo {
 		this.comandos = comandos;
 		
 		this.vars = new ArrayList<Variavel>(); // Funciona como um array, mas tem método add() para adicionar itens
-		for (int i = 0; i < variaveis.size(); i++) {
-			this.vars.add(variaveis.get(i));
+		if (variaveis != null) {
+			for (int i = 0; i < variaveis.size(); i++) {
+				this.vars.add(variaveis.get(i));
+			}
 		}
 	}
 	
-	private void processa() throws IllegalArgumentException {
-		buffer = new String();
-		instruct = new String();
+	public void processa() throws IllegalArgumentException {
+		String buffer = "";
+		String instruct = "";
 	
 		for (i = 0; i < this.comandos.length(); i++) {
 			j = 0;
 			buffer = buffer + comandos.charAt(i + j);
-			while (fimComando(buffer.charAt(j)))  { //aqui alimentamos o buffer até achar um fim de comando
+			while (!fimComando(buffer.charAt(j)))  { //aqui alimentamos o buffer até achar um fim de comando
 				j++;
 				buffer = buffer + comandos.charAt(i + j);
 			}
-			
+			System.out.println("buffer = " + buffer);
 			//////////////////////////////////////////
 			//////////////////////////////////////////
 			String[] tokens = buffer.split(" +|\t+|\n+|\r+");
@@ -87,7 +89,7 @@ class Escopo {
 							declaraVariavel(tokens[0], tokens[2], "");
 							if (tokens.length >= 5) {
 								if (tokens[4].equals(",")) {
-									// essa parte se vamos permitir declaração de múltiplas variáveis separadas por vírgula
+									// declaração de múltiplas variáveis separadas por vírgula
 								} else if (! tokens[4].equals(";")) {
 									throw new IllegalArgumentException("Símbolo " + tokens[4] + " inválido. Esperado , ou ;");
 								}
@@ -99,7 +101,12 @@ class Escopo {
 				} else {
 					throw new IllegalArgumentException("Esperado tipo de variável apos var");
 				}
-			} /* else if (tokens[0].equals("func")) {
+			} else if (tokens[0].equals("imprima_linha")) {
+				System.out.println("aqui");
+				Saida.imprimeLinha(this, buffer.substring(buffer.indexOf("imprima_linha") + 13, buffer.length()));
+			}
+			
+			/* else if (tokens[0].equals("func")) {
 				if (Verificacao.tipoValido(tokens[1])) {
 					if (Verificacao.nomeValido(tokens[2])) {
 						// declara a função
