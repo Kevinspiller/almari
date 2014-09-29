@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Escopo {
-	private String comandos, buffer, instruct, novobloco;
+	private String comandos, novobloco;
 	private ArrayList<Variavel> vars;
 	private int i, j, h, l, blocos;
 	
