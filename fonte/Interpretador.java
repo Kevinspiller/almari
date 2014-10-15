@@ -12,7 +12,6 @@ class Interpretador {
 				i++;
 			}
 			if (comandos.substring(i, i + 9).equals("principal")) {
-				//System.out.println(comandos.substring(i, i + 9));
 				i += 9;
 				while (Character.isWhitespace(comandos.charAt(i)) && i < comandos.length()) {
 					i++;
@@ -31,9 +30,13 @@ class Interpretador {
 					}
 					if (chaveInicio == chaveFim) {
 						bloco = comandos.substring(inicioBloco, i - 1);
-						//System.out.println(bloco);
-						principal = new Escopo(comandos, null);
-						principal.processa();
+
+						principal = new Escopo(bloco, null);
+						try {
+							principal.processa();
+						} catch (IllegalArgumentException e) {
+							System.out.println(e.getMessage());
+						}
 					} else {
 						throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
 					}
@@ -43,6 +46,5 @@ class Interpretador {
 				break;
 			}
 		}
-		//System.out.println(comandos);
 	}
 }

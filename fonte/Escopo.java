@@ -6,29 +6,32 @@ class Escopo {
 	private int i, j, h, l, blocos;
 	
 	private boolean fimComando(char c) {
-		return (c != ';' || c != '{');
+		return (c == ';' || c == '{' || c == '}');
 	}
 	
-	private Variavel declaraVariavel(String tipo, String nome, String valor) throws IllegalArgumentException {
+	private boolean declaraVariavel(String tipo, String nome, String valor) {
 		Variavel var = null;
 		if (! existeVariavel(nome)) {
-			if (tipo.equals("inteiro")) {
+			if (tipo.equals("int")) {
 				var = new Inteiro(nome, valor.equals("") ? 0 : Integer.parseInt(valor));
 			} else if (tipo.equals("real")) {
 				var = new Real(nome, valor.equals("") ? 0.0 : Double.parseDouble(valor));
 			} else if (tipo.equals("caractere")) {
 				var = new Caractere(nome, valor);
-			} else {
-				throw new IllegalArgumentException("Tipo inválido: " + tipo);
 			}
 		}
-		return var;
+		if (var != null) {
+			vars.add(var);
+			return true;
+		}
+		return false;
 	}
 	
 	public Variavel buscaVariavel(String nome) {
 		Variavel var;
 		for (int i = 0; i < this.vars.size(); i++) {
-			if ((var = this.vars.get(i)).getNome().equals(nome)) {
+			var = this.vars.get(i);
+			if (var.getNome().equals(nome)) {
 				return var;
 			}
 		}
@@ -62,16 +65,16 @@ class Escopo {
 	
 		for (i = 0; i < this.comandos.length(); i++) {
 			j = 0;
-			buffer = buffer + comandos.charAt(i + j);
-			while (!fimComando(buffer.charAt(j)))  { //aqui alimentamos o buffer até achar um fim de comando
-				j++;
+			buffer = "";
+			//buffer = buffer + comandos.charAt(i + j);
+			while (!fimComando(comandos.charAt(i + j)))  { //aqui alimentamos o buffer até achar um fim de comando
 				buffer = buffer + comandos.charAt(i + j);
+				j++;
 			}
-			System.out.println("buffer = " + buffer);
-			//////////////////////////////////////////
-			//////////////////////////////////////////
-			String[] tokens = buffer.split(" +|\t+|\n+|\r+");
+			i += j;
 
+			String[] tokens = buffer.trim().split(" +|\t+|\n+|\r+");
+			
 			// tratamento da declaração de variáveis
 			// funções são tratadas na classe Interpretador pois ficam declaradas fora do escopo
 			if (tokens[0].equals("var")) {
@@ -83,15 +86,15 @@ class Escopo {
 								// declara passando o tipo, nome e valor
 								declaraVariavel(tokens[1], tokens[2], tokens[4]);
 							} else {
-								throw new IllegalArgumentException("Esperado valor válido para a variável " + tokens[2] + " do tipo " + tokens[1]);
+								throw new IllegalArgumentException("Esperado valor valido para a variavel " + tokens[2] + " do tipo " + tokens[1]);
 							}
 						} else {
-							declaraVariavel(tokens[0], tokens[2], "");
+							declaraVariavel(tokens[1], tokens[2], "");
 							if (tokens.length >= 5) {
 								if (tokens[4].equals(",")) {
 									// declaração de múltiplas variáveis separadas por vírgula
 								} else if (! tokens[4].equals(";")) {
-									throw new IllegalArgumentException("Símbolo " + tokens[4] + " inválido. Esperado , ou ;");
+									throw new IllegalArgumentException("Simbolo " + tokens[4] + " invalido. Esperado , ou ;");
 								}
 							}
 						}
@@ -102,8 +105,9 @@ class Escopo {
 					throw new IllegalArgumentException("Esperado tipo de variável apos var");
 				}
 			} else if (tokens[0].equals("imprima_linha")) {
-				System.out.println("aqui");
 				Saida.imprimeLinha(this, buffer.substring(buffer.indexOf("imprima_linha") + 13, buffer.length()));
+			} else if (tokens[0].equals("imprima")) {
+				Saida.imprime(this, buffer.substring(buffer.indexOf("imprima") + 7, buffer.length()));			
 			}
 			
 			/* else if (tokens[0].equals("func")) {
@@ -118,41 +122,6 @@ class Escopo {
 				}
 			}
 			*/
-			/////////////////////////////////////
-			/////////////////////////////////////
-
-
-		
-			if (buffer.charAt(j) == '{') { //se o fim de comando foi o "{", então são quatro possibilidades, while, if, função ou erro
-				for (l = 0; !Character.isWhitespace(buffer.charAt(l)); l++); //aqui eliminamos os primeiros espaços, TAB ou \n (sintaxe flexivel)
-				h = 0;
-				while (buffer.charAt(l) != ' ' && buffer.charAt(l) != '{' && buffer.charAt(l) != '(') { //por ser sintaxe flexivel, os parenteses podem estar colados no comando
-					instruct = instruct + buffer.charAt(l); //aqui alimentamos a instrução (while, função, if ou erro)
-					h++;
-					l++;				
-				}
-				
-				if (instruct.equals("while")) { //se for um while, vamos descobrir a condição e armazenar numa string
-					while (buffer.charAt(l) != '(') { //se o ponteiro não tiver no parenteses, vamos deixar lá
-						if (buffer.charAt(l) == '{') { //se após a instrução tem uma chave ao inves de um parentes, erro, tem q ter parenteses
-							//ABORTAR PROGRAMA
-							throw new IllegalArgumentException("Esperado perêntese direito após expressão");
-						}
-						l++;
-					}
-					blocos = 1;
-					novobloco  = new String();
-					while (blocos > 0) {
-						//for (h = 0; 
-						
-						
-					}
-				
-					
-				}
-				
-			}
-		
 		
 		}		
 	}

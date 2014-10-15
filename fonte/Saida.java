@@ -2,21 +2,23 @@ class Saida {
 
 	public static void imprime(Escopo escopo, String linha){
 		int i = 0, j;
-		while (i < linha.length()) {                                          // vai rodar o While enquanto o a não for maior que o tamanho do vetor
-			if (linha.charAt(i) == '"') { //Testa se aquela parte do vetor (token) contém aspas 
-				for (i++; linha.charAt(i) != '"' && i < linha.length(); i++) { 		//vai imprimindo tudo que esta entre as aspas, até achar uma outra aspa
+		boolean entreAspa = false;
+		while (i < linha.length()) {
+			if (linha.charAt(i) == '"') { //Testa se aquela parte da string contém aspas 
+				entreAspa = !entreAspa;
+				for (i++; i < linha.length() && entreAspa && linha.charAt(i) != '"'; i++) { 		//vai imprimindo tudo que esta entre as aspas, até achar uma outra aspa
 					System.out.print(linha.charAt(i));
 				}
 			} else if (Verificacao.charValidoNome(linha.charAt(i))) {   //testa se o caractere é uma letra, que caracteriza o inicio do nome da variavel 
-				String nomVar = "";												// seria a criação de um vetor char, para salvar esses caracteres
+				String nomVar = "";
 				j = 0;
 
-				while (Verificacao.charValidoNome(linha.charAt(i)) && i < linha.length()) {                         //aqui ele salva todos os caracteres seguintes, até o espaço, que seria o nome da variavel																							nomVar += linha.charAt(i);													//aqui apenas salva esses caracteres na nomVar					
+				while (i < linha.length() && Verificacao.charValidoNome(linha.charAt(i))) {                         //aqui ele salva todos os caracteres seguintes, até o espaço, que seria o nome da variavel																							nomVar += linha.charAt(i);													//aqui apenas salva esses caracteres na nomVar					
 					nomVar += linha.charAt(i);
 					i++;
 				}
-
-				Variavel var = escopo.buscaVariavel(nomVar); // passa como parâmetro a string com o nome da variavel para outro método
+				
+				Variavel var = escopo.buscaVariavel(nomVar);
 				if (var != null) {
 					switch (var.getTipo()) {
 						case 'I': 
@@ -34,22 +36,17 @@ class Saida {
 					try {
 						System.out.print(Double.parseDouble(nomVar));
 					} catch (NumberFormatException e) {
-						System.out.print("\nVariável " + nomVar + " não declarada");
+						System.out.print("\nVariavel " + nomVar + " nao declarada");
 					}
 				}
-			} else if (Character.isWhitespace(linha.charAt(i))) {
+			} else /* if (Character.isWhitespace(linha.charAt(i))) */ {
 				i++;
 			}
 		}
 	}
 	
-	public static void imprimeLinha(Escopo escopo, String linha){ // Método igual ao imprime, mas que imprime e da um /n no final
-		imprime(escopo, linha);						 // chama o outro método, pois faz a mesma coisa
-		System.out.print("\n");							 // da o \n
+	public static void imprimeLinha(Escopo escopo, String linha){
+		imprime(escopo, linha);
+		System.out.print("\n");
 	}
 }
-	
-	
-	//chegando aqui, espero que ele tenha impresso TUDO o que deveria ser impresso. Não haverá caractere especial fora das aspas né? como &, %, @ e etc etc?
-	
-	

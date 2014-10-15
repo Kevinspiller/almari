@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.io.*;
 
 class Almari {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         File arquivo;
         Scanner scanner;
         Interpretador interpretador;
