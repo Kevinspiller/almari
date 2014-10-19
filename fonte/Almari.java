@@ -1,3 +1,9 @@
+/*
+* Classe para tratar a leitura do arquivo contendo um programa escrito na linguagem Almari
+* Autor: Maico Smaniotto
+* E-mail: maicosmaniotto@gmail.com
+*/
+
 import java.util.Scanner;
 import java.io.*;
 

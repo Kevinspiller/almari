@@ -1,3 +1,9 @@
+/*
+* Classe que define o tipo de variável "int"
+* Autor: Alexandre Bernard Coletti
+* E-mail: eu_axil@yahoo.com.br
+*/
+
 class Inteiro extends Variavel {
 	private int valor;
 	

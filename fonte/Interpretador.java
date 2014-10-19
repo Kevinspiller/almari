@@ -1,3 +1,9 @@
+/*
+* Classe para identificar a função principal do programa e localizar os comandos para a execução
+* Autor: Maico Smaniotto
+* E-mail: maicosmaniotto@gmail.com
+*/
+
 class Interpretador {
 	public void interpreta(String comandos) throws IllegalArgumentException {
 		int i = 0;

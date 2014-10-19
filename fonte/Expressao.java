@@ -1,3 +1,9 @@
+/*
+* Classe para resolver expressões de atribuição de valores em variáveis, bem como operaçõe de soma, subtração, multiplicação e divisão 
+* Autor: Maico Smaniotto
+* E-mail: maicosmaniotto@gmail.com
+*/
+
 import java.util.*;
 
 class Expressao {

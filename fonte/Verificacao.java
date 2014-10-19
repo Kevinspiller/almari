@@ -1,3 +1,9 @@
+/*
+* Classe com implementação dos métodos de verificação de nomes e valores de variáveis 
+* Autor: Maico Smaniotto
+* E-mail: maicosmaniotto@gmail.com
+*/
+
 class Verificacao {
 	public static boolean tipoValido(String tipo) {
 		return tipo.equals("int") || tipo.equals("real") || tipo.equals("caractere");

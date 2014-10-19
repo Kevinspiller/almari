@@ -1,3 +1,9 @@
+/*
+* Classe com implementação dos métodos de saída/impressão
+* Autor: Ricardo Augusto Müller
+* E-mail: ricardoam0908@gmail.com
+*/
+
 class Saida {
 
 	public static void imprime(Escopo escopo, String linha){

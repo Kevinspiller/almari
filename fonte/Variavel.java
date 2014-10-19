@@ -1,3 +1,9 @@
+/*
+* Classe base para a definição das variáveis
+* Autor: Alexandre Bernard Coletti
+* E-mail: eu_axil@yahoo.com.br
+*/
+
 class Variavel {
 	private char tipo;
 	private String nome;
@@ -8,13 +14,13 @@ class Variavel {
 	protected void setTipo(char t) {
 		this.tipo = t;
 	}
-	public char getTipo () {
+	public char getTipo() {
 		return this.tipo;
 	}
 	protected void setNome(String n) {
 		this.nome = new String(n);
 	}
-	public String getNome () {
+	public String getNome() {
 		return this.nome;
 	}
 }

@@ -1,3 +1,9 @@
+/*
+* Classe para tratar o processamento dos comandos dentro de um escopo
+* Autor: Maico Smaniotto
+* E-mail: maicosmaniotto@gmail.com
+*/
+
 import java.util.*;
 
 class Escopo {

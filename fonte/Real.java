@@ -1,3 +1,9 @@
+/*
+* Classe que define o tipo de variável "real"
+* Autor: Alexandre Bernard Coletti
+* E-mail: eu_axil@yahoo.com.br
+*/
+
 class Real extends Variavel {
 	private double valor;
 	

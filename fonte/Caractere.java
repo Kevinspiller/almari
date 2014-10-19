@@ -1,3 +1,9 @@
+/*
+* Classe que define o tipo de variável "caractere"
+* Autor: Alexandre Bernard Coletti
+* E-mail: eu_axil@yahoo.com.br
+*/
+
 class Caractere extends Variavel {
 	private String valor;
 	

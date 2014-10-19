@@ -1,3 +1,9 @@
+/*
+* Classe com implementação dos métodos de entrada
+* Autor: Ricardo Augusto Müller
+* E-mail: ricardoam0908@gmail.com
+*/
+
 import java.util.Scanner;
 
 class Entrada {
