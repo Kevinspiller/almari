@@ -201,8 +201,6 @@ class Expressao {
 			} else {
 				throw new IllegalArgumentException("Comando desconhecido: " + tokens.get(0));
 			}
-		} else {
-		
 		}
 	}
 }
