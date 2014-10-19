@@ -34,7 +34,7 @@ class Interpretador {
 						principal = new Escopo(bloco, null);
 						try {
 							principal.processa();
-						} catch (IllegalArgumentException e) {
+						} catch (Exception e) {
 							System.out.println(e.getMessage());
 						}
 					} else {

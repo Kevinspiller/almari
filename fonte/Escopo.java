@@ -59,7 +59,7 @@ class Escopo {
 		}
 	}
 	
-	public void processa() throws IllegalArgumentException {
+	public void processa() throws Exception {
 		String buffer = "";
 		String instruct = "";
 	
@@ -108,21 +108,44 @@ class Escopo {
 				Saida.imprimeLinha(this, buffer.substring(buffer.indexOf("imprima_linha") + 13, buffer.length()));
 			} else if (tokens[0].equals("imprima")) {
 				Saida.imprime(this, buffer.substring(buffer.indexOf("imprima") + 7, buffer.length()));			
-			}
-			
-			/* else if (tokens[0].equals("func")) {
-				if (Verificacao.tipoValido(tokens[1])) {
-					if (Verificacao.nomeValido(tokens[2])) {
-						// declara a função
+			} else if (tokens[0].equals("leia_inteiro")) {
+				int valorInt = Entrada.leInteiro();
+				if (tokens.length > 1) {
+					Variavel var = this.buscaVariavel(tokens[1]);
+					if (var != null) {
+						((Inteiro)var).setValor(valorInt);
 					} else {
-						throw new IllegalArgumentException("Nome de função inválido: " + tokens[2]);
+						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
 					}
-				} else {
-					throw new IllegalArgumentException("Tipo de função inválido: " + tokens[j + 1]);
 				}
-			}
-			*/
-		
+			} else if (tokens[0].equals("leia_real")) {
+				double valorReal = Entrada.leReal();
+				if (tokens.length > 1) {
+					Variavel var = this.buscaVariavel(tokens[1]);
+					if (var != null) {
+						((Real)var).setValor(valorReal);
+					} else {
+						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
+					}
+				}
+			} else if (tokens[0].equals("leia_palavra") || tokens[0].equals("leia_linha")) {
+				String linha;
+				if (tokens[0].equals("leia_palavra")) {
+					linha = Entrada.lePalavra();
+				} else {
+					linha = Entrada.leLinha();
+				}
+				if (tokens.length > 1) {
+					Variavel var = this.buscaVariavel(tokens[1]);
+					if (var != null) {
+						((Caractere)var).setValor(linha);
+					} else {
+						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
+					}
+				}
+			} else {
+				Expressao.resolveExpressao(this, buffer);
+			}		
 		}		
 	}
 }

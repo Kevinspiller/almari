@@ -16,7 +16,7 @@ class Expressao {
 				if (expr.charAt(i) == '"') {
 					entreAspa = !entreAspa;
 				}
-				if (!Character.isWhitespace(expr.charAt(i)) || entreAspa) {
+				if ((!Character.isWhitespace(expr.charAt(i)) && expr.charAt(i) != ';') || entreAspa) {
 					token += expr.charAt(i);
 				} else {
 					if (token.length() != 0) {
@@ -25,10 +25,14 @@ class Expressao {
 					token = "";
 				}
 			}
+			if (token.length() != 0) {
+				tokens.add(token);
+			}
 			// se chegou no final e não encontrou o número correto de aspas, lança uma exceção avisando do erro
 			if (entreAspa) {
 				throw new IllegalArgumentException("Terminador da cadeia de caracteres \" não encontrado");
 			}
+			
 			return tokens;
 		} else {
 			return null;
@@ -152,7 +156,7 @@ class Expressao {
 							} else if (tokens.size() == 5) {
 								resultInt = resolveInteiro(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
 							} else {
-								throw new IllegalArgumentException("Expressão inválida");
+								throw new IllegalArgumentException("Expressao invalida");
 							}
 							((Inteiro)var1).setValor(resultInt);
 							break;
@@ -166,7 +170,7 @@ class Expressao {
 							} else if (tokens.size() == 5) {
 								resultReal = resolveReal(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
 							} else {
-								throw new IllegalArgumentException("Expressão inválida");
+								throw new IllegalArgumentException("Expressao invalida");
 							}
 							((Real)var1).setValor(resultReal);
 							break;
@@ -186,7 +190,7 @@ class Expressao {
 							break;
 					}
 				} else {
-					throw new IllegalArgumentException("Esperado operador de atribuição  :=");
+					throw new IllegalArgumentException("Esperado operador de atribuição :=");
 				}
 			} else {
 				throw new IllegalArgumentException("Comando desconhecido: " + tokens.get(0));
