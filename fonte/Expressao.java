@@ -158,6 +158,13 @@ class Expressao {
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultInt = ((Inteiro)var2).getValor();
+								} else {
+									try {
+										System.out.println("inteiro");
+										resultInt = Integer.parseInt(tokens.get(2));
+									} catch (NumberFormatException e) {
+										throw new IllegalArgumentException("numero invalido: " + tokens.get(2));
+									}
 								}
 							} else if (tokens.size() == 5) {
 								resultInt = resolveInteiro(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
@@ -172,6 +179,12 @@ class Expressao {
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultReal = ((Real)var2).getValor();
+								} else {
+									try {
+										resultReal = Double.parseDouble(tokens.get(2));
+									} catch (NumberFormatException e) {
+										throw new IllegalArgumentException("numero invalido: " + tokens.get(2));
+									}
 								}
 							} else if (tokens.size() == 5) {
 								resultReal = resolveReal(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
@@ -186,6 +199,8 @@ class Expressao {
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultCaractere = ((Caractere)var2).getValor();
+								} else {
+									resultCaractere = tokens.get(2).substring(1, tokens.get(2).length() - 1);
 								}
 							} else if (tokens.size() == 5) {
 								resultCaractere = resolveCaractere(escopo, tokens.get(2), tokens.get(3), tokens.get(4));

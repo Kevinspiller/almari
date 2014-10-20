@@ -149,6 +149,48 @@ class Escopo {
 						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
 					}
 				}
+			} else if (tokens[0].equals("se")) {
+				Escopo escopoIf = null;
+				String expr, blocoIf;
+				int inicioBloco, chaveInicio, chaveFim, posicao;
+				
+				inicioBloco = buffer.indexOf("{");
+				expr = buffer.substring(buffer.indexOf("se") + 2, inicioBloco);
+				System.out.println(expr);
+				posicao = inicioBloco;
+				if (buffer.charAt(posicao) == '{') {
+					inicioBloco = ++posicao;
+					chaveInicio = 1;
+					chaveFim = 0;
+					while (posicao < buffer.length() && chaveInicio > chaveFim) {
+						if (comandos.charAt(posicao) == '{') {
+							chaveInicio++;
+						} else if (comandos.charAt(posicao) == '}') {
+							chaveFim++;
+						}
+						posicao++;
+					}
+					if (chaveInicio == chaveFim) {
+						blocoIf = buffer.substring(inicioBloco, posicao - 1);
+					} else {
+						throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
+					}
+				} else {
+					throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
+				}
+				
+				if (Condicao.avaliaCondicao(this, expr)) {
+					escopoIf = new Escopo(blocoIf, this.vars);
+					try {
+						escopoIf.processa();
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+					}
+				} else {
+				
+				}
+				// avança o i até o final do bloco do if para que o processamento continue no comando seguinte
+				i += posicao;
 			} else {
 				Expressao.resolveExpressao(this, buffer);
 			}		
