@@ -6,7 +6,7 @@
 
 class Verificacao {
 	public static boolean tipoValido(String tipo) {
-		return tipo.equals("int") || tipo.equals("real") || tipo.equals("caractere");
+		return tipo.equals("inteiro") || tipo.equals("real") || tipo.equals("caractere");
 	}
 
 	public static boolean charValidoNome(char chr) {
@@ -34,7 +34,7 @@ class Verificacao {
 	}
 
 	public static boolean valorValido(String tipo, String valor) {
-		if (tipo.equals("int")) {
+		if (tipo.equals("inteiro")) {
 			try {
 				Integer.parseInt(valor);
 				return true;

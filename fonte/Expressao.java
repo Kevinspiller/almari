@@ -35,7 +35,7 @@ class Expressao {
 			}
 			// se chegou no final e não encontrou o número correto de aspas, lança uma exceção avisando do erro
 			if (entreAspa) {
-				throw new IllegalArgumentException("Terminador da cadeia de caracteres \" não encontrado");
+				throw new IllegalArgumentException("Terminador da cadeia de caracteres \" nao encontrado");
 			}
 			return tokens;
 		} else {
@@ -77,7 +77,7 @@ class Expressao {
 		} else if (operador.equals("%")) {
 			return valor1 % valor2;
 		} else {
-			throw new IllegalArgumentException("Operador " + operador + " não definido");
+			throw new IllegalArgumentException("Operador " + operador + " nao definido");
 		}
 	}
 	
@@ -113,7 +113,7 @@ class Expressao {
 		} else if (operador.equals("/")) {
 			return valor1 / valor2;
 		} else {
-			throw new IllegalArgumentException("Operador " + operador + " não definido");
+			throw new IllegalArgumentException("Operador " + operador + " nao definido");
 		}
 	}
 	
@@ -135,7 +135,7 @@ class Expressao {
 		if (operador.equals("+")) {
 			return valor1 + valor2;
 		} else {
-			throw new IllegalArgumentException("Operador " + operador + " não definido");
+			throw new IllegalArgumentException("Operador " + operador + " nao definido");
 		}		
 	}
 	
@@ -202,13 +202,13 @@ class Expressao {
 							} else if (tokens.size() == 5) {
 								resultCaractere = resolveCaractere(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
 							} else {
-								throw new IllegalArgumentException("Expressão inválida");
+								throw new IllegalArgumentException("Expressao inválida");
 							}
 							((Caractere)var1).setValor(resultCaractere);
 							break;
 					}
 				} else {
-					throw new IllegalArgumentException("Esperado operador de atribuição :=");
+					throw new IllegalArgumentException("Esperado operador de atribuicao :=");
 				}
 			} else {
 				throw new IllegalArgumentException("Comando desconhecido: " + tokens.get(0));

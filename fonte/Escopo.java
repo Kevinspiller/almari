@@ -13,12 +13,12 @@ class Escopo {
 	private void declaraVariavel(String tipo, String nome, String valor) {
 		Variavel var = null;
 		if (! existeVariavel(nome)) {
-			if (tipo.equals("int")) {
+			if (tipo.equals("inteiro")) {
 				var = new Inteiro(nome, valor.equals("") ? 0 : Integer.parseInt(valor));
 			} else if (tipo.equals("real")) {
 				var = new Real(nome, valor.equals("") ? 0.0 : Double.parseDouble(valor));
 			} else if (tipo.equals("caractere")) {
-				var = new Caractere(nome, valor);
+				var = new Caractere(nome, valor != null && valor.length() > 1 ? valor.substring(1, valor.length() - 1) : "");
 			}
 		}
 		if (var != null) {
@@ -47,7 +47,7 @@ class Escopo {
 		return false;
 	}
 	
-	public String carregaBloco(int inicio) throws Exception {
+	public static String carregaBloco(String comandos, int inicio) throws Exception {
 		int posicao, chaveInicio, chaveFim;
 		posicao = inicio;
 		while (Character.isWhitespace(comandos.charAt(posicao))) {
@@ -101,26 +101,27 @@ class Escopo {
 			}
 			i += j;
 			
-			String[] tokens = buffer.trim().split(" +|\t+|\n+|\r+");
+			//String[] tokens = buffer.trim().split(" +|\t+|\n+|\r+");
+			ArrayList<String> tokens = Expressao.separaTokens(buffer);
 			
 			// tratamento da declaração de variáveis
 			// funções são tratadas na classe Interpretador pois ficam declaradas fora do escopo
-			if (tokens[0].equals("var")) {
-				if (tokens.length >= 2 && Verificacao.tipoValido(tokens[1])) {
-					if (tokens.length >= 3 && Verificacao.nomeValido(tokens[2])) {
-						if (tokens.length >= 4 && tokens[3].equals(":=")) {
+			if (tokens.get(0).equals("var")) {
+				if (tokens.size() >= 2 && Verificacao.tipoValido(tokens.get(1))) {
+					if (tokens.size() >= 3 && Verificacao.nomeValido(tokens.get(2))) {
+						if (tokens.size() >= 4 && tokens.get(3).equals(":=")) {
 							// declaração com atribuição, verifica se o valor que está atribuindo corresponde ao tipo declarado
-							if (tokens.length >= 5 && Verificacao.valorValido(tokens[1], tokens[4])) {
+							if (tokens.size() >= 5 && Verificacao.valorValido(tokens.get(1), tokens.get(4))) {
 								// declara passando o tipo, nome e valor
-								declaraVariavel(tokens[1], tokens[2], tokens[4]);
+								declaraVariavel(tokens.get(1), tokens.get(2), tokens.get(4));
 							} else {
-								throw new IllegalArgumentException("Esperado valor valido para a variavel " + tokens[2] + " do tipo " + tokens[1]);
+								throw new IllegalArgumentException("Esperado valor valido para a variavel " + tokens.get(2) + " do tipo " + tokens.get(1));
 							}
 						} else {
-							declaraVariavel(tokens[1], tokens[2], "");
-							if (tokens.length >= 5) {
-								if (! tokens[4].equals(";")) {
-									throw new IllegalArgumentException("Simbolo " + tokens[4] + " invalido. Esperado ;");
+							declaraVariavel(tokens.get(1), tokens.get(2), "");
+							if (tokens.size() >= 5) {
+								if (! tokens.get(4).equals(";")) {
+									throw new IllegalArgumentException("Simbolo " + tokens.get(4) + " invalido. Esperado ;");
 								}
 							}
 						}
@@ -130,53 +131,53 @@ class Escopo {
 				} else {
 					throw new IllegalArgumentException("Esperado tipo de variável apos var");
 				}
-			} else if (tokens[0].equals("imprima_linha")) {
+			} else if (tokens.get(0).equals("imprima_linha")) {
 				Saida.imprimeLinha(this, buffer.substring(buffer.indexOf("imprima_linha") + 13, buffer.length()));
-			} else if (tokens[0].equals("imprima")) {
+			} else if (tokens.get(0).equals("imprima")) {
 				Saida.imprime(this, buffer.substring(buffer.indexOf("imprima") + 7, buffer.length()));
-			} else if (tokens[0].equals("leia_inteiro")) {
+			} else if (tokens.get(0).equals("leia_inteiro")) {
 				int valorInt = Entrada.leInteiro();
-				if (tokens.length > 1) {
-					Variavel var = this.buscaVariavel(tokens[1]);
+				if (tokens.size() > 1) {
+					Variavel var = this.buscaVariavel(tokens.get(1));
 					if (var != null) {
 						((Inteiro)var).setValor(valorInt);
 					} else {
-						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
+						throw new IllegalArgumentException("Variavel " + tokens.get(1) + " nao declarada");
 					}
 				}
-			} else if (tokens[0].equals("leia_real")) {
+			} else if (tokens.get(0).equals("leia_real")) {
 				double valorReal = Entrada.leReal();
-				if (tokens.length > 1) {
-					Variavel var = this.buscaVariavel(tokens[1]);
+				if (tokens.size() > 1) {
+					Variavel var = this.buscaVariavel(tokens.get(1));
 					if (var != null) {
 						((Real)var).setValor(valorReal);
 					} else {
-						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
+						throw new IllegalArgumentException("Variavel " + tokens.get(1) + " nao declarada");
 					}
 				}
-			} else if (tokens[0].equals("leia_palavra") || tokens[0].equals("leia_linha")) {
+			} else if (tokens.get(0).equals("leia_palavra") || tokens.get(0).equals("leia_linha")) {
 				String linha;
-				if (tokens[0].equals("leia_palavra")) {
+				if (tokens.get(0).equals("leia_palavra")) {
 					linha = Entrada.lePalavra();
 				} else {
 					linha = Entrada.leLinha();
 				}
-				if (tokens.length > 1) {
-					Variavel var = this.buscaVariavel(tokens[1]);
+				if (tokens.size() > 1) {
+					Variavel var = this.buscaVariavel(tokens.get(1));
 					if (var != null) {
 						((Caractere)var).setValor(linha);
 					} else {
-						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
+						throw new IllegalArgumentException("Variavel " + tokens.get(1) + " nao declarada");
 					}
 				}
-			} else if (tokens[0].trim().equals("se")) {
+			} else if (tokens.get(0).trim().equals("se")) {
 				Escopo escopoSe = null, escopoSeNao = null;
 				String expr, blocoSe = null, blocoSeNao = null;
 				
 				expr = buffer.substring(buffer.indexOf("se") + 2, buffer.length() - 1);
 				
 				// carrega todo o bloco do "se", começando da posição "i" que parou antes da chave "{"
-				blocoSe = carregaBloco(i);
+				blocoSe = carregaBloco(comandos, i);
 				
 				// avança o "i" até o final do bloco do "se" para que o processamento continue no comando seguinte
 				i += blocoSe.length() + 2;
@@ -189,7 +190,7 @@ class Escopo {
 					i += 5;
 
 					// carrega todo o bloco do "senao", começando da posição "i" que parou depois da chave "}"
-					blocoSeNao = carregaBloco(i);
+					blocoSeNao = carregaBloco(comandos, i);
 				
 					// avança o "i" até o final do bloco do "senao" para que o processamento continue no comando seguinte
 					i += blocoSeNao.length() + 2;
@@ -203,14 +204,14 @@ class Escopo {
 					escopoSeNao = new Escopo(blocoSeNao, this.vars);
 					escopoSeNao.processa();
 				}
-			} else if (tokens[0].trim().equals("enquanto")) {
+			} else if (tokens.get(0).trim().equals("enquanto")) {
 				Escopo escopoEnquanto = null;
 				String expr, blocoEnquanto = null;
 				
 				expr = buffer.substring(buffer.indexOf("enquanto") + 8, buffer.length() - 1);
 				
 				// carrega todo o bloco do "enquanto", começando da posição "i" que parou antes da chave "{"
-				blocoEnquanto = carregaBloco(i);
+				blocoEnquanto = carregaBloco(comandos, i);
 							
 				// avança o "i" até o final do bloco do "enquanto" para que o processamento continue no comando seguinte
 				i += blocoEnquanto.length() + 2;

@@ -1,13 +1,12 @@
 /*
-* Classe para identificar a função principal do programa e localizar os comandos para a execução
+* Classe para identificar a função principal do programa e instanciar seu escopo para execução
 * Autor: Maico Smaniotto
 * E-mail: maicosmaniotto@gmail.com
 */
 
 class Interpretador {
-	public void interpreta(String comandos) throws IllegalArgumentException {
+	public void interpreta(String comandos) {
 		int i = 0;
-		int inicioBloco, chaveInicio, chaveFim;
 		String bloco = "";
 		Escopo principal;
 		
@@ -19,35 +18,12 @@ class Interpretador {
 			}
 			if (comandos.substring(i, i + 9).equals("principal")) {
 				i += 9;
-				while (Character.isWhitespace(comandos.charAt(i)) && i < comandos.length()) {
-					i++;
-				}
-				if (comandos.charAt(i) == '{') {
-					inicioBloco = ++i;
-					chaveInicio = 1;
-					chaveFim = 0;
-					while (i < comandos.length() && chaveInicio > chaveFim) {
-						if (comandos.charAt(i) == '{') {
-							chaveInicio++;
-						} else if (comandos.charAt(i) == '}') {
-							chaveFim++;
-						}
-						i++;
-					}
-					if (chaveInicio == chaveFim) {
-						bloco = comandos.substring(inicioBloco, i - 1);
-
-						principal = new Escopo(bloco, null);
-						try {
-							principal.processa();
-						} catch (Exception e) {
-							System.out.println(e.getMessage());
-						}
-					} else {
-						throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
-					}
-				} else {
-					throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
+				try {
+					bloco = Escopo.carregaBloco(comandos, i);
+					principal = new Escopo(bloco, null);
+					principal.processa();
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
 				}
 				break;
 			}
