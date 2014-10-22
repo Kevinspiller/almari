@@ -1,0 +1,9 @@
+func principal {
+	var caractere nome;
+	
+	imprima "Digite seu nome: ";
+
+	leia_linha nome;
+	
+	imprima_linha "Seu nome eh " nome;
+}

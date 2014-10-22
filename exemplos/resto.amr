@@ -1,0 +1,14 @@
+func principal {
+	var inteiro num1;
+	var inteiro num2;
+	
+	imprima "Digite um numero: ";
+	leia_inteiro num1;
+	
+	imprima "Digite outro numero: ";
+	leia_inteiro num2;
+	
+	num1 := num1 % num2;
+	
+	imprima_linha "Resto = " num1;
+}

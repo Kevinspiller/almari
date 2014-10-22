@@ -1,0 +1,9 @@
+func principal {
+	var inteiro n1 := 2;
+	var inteiro n2 := 5;
+	var inteiro n3;
+	
+	n3 := n1 + n2;
+
+	imprima_linha "soma de " n1 " com " n2 " = " n3;
+}

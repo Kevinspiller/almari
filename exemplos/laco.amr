@@ -1,0 +1,12 @@
+func principal {
+	var inteiro a := 0;
+	var inteiro b := 0;
+
+	a := 0;
+	b := 5;
+	
+	enquanto a < b {
+		a := a + 1;
+		imprima_linha a;
+	}
+}
