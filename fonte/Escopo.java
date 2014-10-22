@@ -150,54 +150,67 @@ class Escopo {
 					}
 				}
 			} else if (tokens[0].trim().equals("se")) {
-				Escopo escopoIf = null;
-				String expr, blocoIf;
-				int inicioBloco, chaveInicio, chaveFim, posicao;
+				Escopo escopoSe = null, escopoSeNao = null;
+				String expr, blocoSe = null, blocoSeNao = null;
 				
 				expr = buffer.substring(buffer.indexOf("se") + 2, buffer.length() - 1);
 				
 				// carrega todo o bloco do "se", começando da posição "i" que parou antes da chave "{"
-				inicioBloco = i;
-
-				posicao = inicioBloco;
-				if (comandos.charAt(posicao) == '{') {
-					inicioBloco = ++posicao;
-					chaveInicio = 1;
-					chaveFim = 0;
-					while (posicao < comandos.length() && chaveInicio > chaveFim) {
-						if (comandos.charAt(posicao) == '{') {
-							chaveInicio++;
-						} else if (comandos.charAt(posicao) == '}') {
-							chaveFim++;
-						}
-						posicao++;
-					}
-
-					if (chaveInicio == chaveFim) {
-						blocoIf = comandos.substring(inicioBloco, posicao - 1);
-					} else {
-						throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
-					}
-				} else {
-					throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
-				}
-				
-				if (Condicao.avaliaCondicao(this, expr)) {
-					escopoIf = new Escopo(blocoIf, this.vars);
-					try {
-						escopoIf.processa();
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-					}
-				} else {
-				
-				}
+				blocoSe = carregaBloco(comandos, i);
+							
 				// avança o "i" até o final do bloco do "se" para que o processamento continue no comando seguinte
-				System.out.println("i = " + i + " posicao = " + posicao);
-				i += posicao;
+				i += blocoSe.length();
+				
+				while (Character.isWhitespace(comandos.charAt(i))) {
+					i++;
+				}
+				if (i + 5 < comandos.length() && comandos.substring(i, i + 5).equals("senao")) {
+					// carrega todo o bloco do "senao", começando da posição "i" que parou depois da chave "}"
+					blocoSeNao = carregaBloco(comandos, i);
+				
+					// avança o "i" até o final do bloco do "senao" para que o processamento continue no comando seguinte
+					i += blocoSeNao.length();
+				}
+				
+				// testa se a condição é verdadeira
+				if (Condicao.avaliaCondicao(this, expr)) {
+					escopoSe = new Escopo(blocoSe, this.vars);
+					escopoSe.processa();
+				} else if (blocoSeNao != null) { // se a condição for falsa, executa o "senao", caso existir
+					escopoSeNao = new Escopo(blocoSeNao, this.vars);
+					escopoSeNao.processa();
+				}
 			} else {
 				Expressao.resolveExpressao(this, buffer);
 			}		
 		}		
 	}
+	
+	public String carregaBloco(String comandos, int inicio) throws Exception {
+		int posicao, chaveInicio, chaveFim;
+		posicao = inicio;
+		while (Character.isWhitespace(comandos.charAt(posicao))) {
+			posicao++;
+		}
+		if (comandos.charAt(posicao) == '{') {
+			inicio = ++posicao;
+			chaveInicio = 1;
+			chaveFim = 0;
+			while (posicao < comandos.length() && chaveInicio > chaveFim) {
+				if (comandos.charAt(posicao) == '{') {
+					chaveInicio++;
+				} else if (comandos.charAt(posicao) == '}') {
+					chaveFim++;
+				}
+				posicao++;
+			}
+			if (chaveInicio == chaveFim) {
+				return comandos.substring(inicio, posicao - 1);
+			} else {
+				throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
+			}
+		} else {
+			throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
+		}				
+	}	
 }
