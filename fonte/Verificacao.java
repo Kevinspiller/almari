@@ -56,5 +56,9 @@ class Verificacao {
 			return false;
 		}
 	}
+	
+	public static boolean fimComando(char c) {
+		return (c == ';' || c == '{' || c == '}');
+	}	
 
 }

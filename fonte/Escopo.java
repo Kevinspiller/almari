@@ -7,15 +7,10 @@
 import java.util.*;
 
 class Escopo {
-	private String comandos, novobloco;
+	private String comandos;
 	private ArrayList<Variavel> vars;
-	private int i, j, h, l, blocos;
 	
-	private boolean fimComando(char c) {
-		return (c == ';' || c == '{' || c == '}');
-	}
-	
-	private boolean declaraVariavel(String tipo, String nome, String valor) {
+	private void declaraVariavel(String tipo, String nome, String valor) {
 		Variavel var = null;
 		if (! existeVariavel(nome)) {
 			if (tipo.equals("int")) {
@@ -28,9 +23,7 @@ class Escopo {
 		}
 		if (var != null) {
 			vars.add(var);
-			return true;
 		}
-		return false;
 	}
 	
 	public Variavel buscaVariavel(String nome) {
@@ -54,6 +47,34 @@ class Escopo {
 		return false;
 	}
 	
+	public String carregaBloco(int inicio) throws Exception {
+		int posicao, chaveInicio, chaveFim;
+		posicao = inicio;
+		while (Character.isWhitespace(comandos.charAt(posicao))) {
+			posicao++;
+		}
+		if (comandos.charAt(posicao) == '{') {
+			inicio = ++posicao;
+			chaveInicio = 1;
+			chaveFim = 0;
+			while (posicao < comandos.length() && chaveInicio > chaveFim) {
+				if (comandos.charAt(posicao) == '{') {
+					chaveInicio++;
+				} else if (comandos.charAt(posicao) == '}') {
+					chaveFim++;
+				}
+				posicao++;
+			}
+			if (chaveInicio == chaveFim) {
+				return comandos.substring(inicio, posicao - 1);
+			} else {
+				throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
+			}
+		} else {
+			throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
+		}				
+	}	
+	
 	public Escopo(String comandos, ArrayList<Variavel> variaveis) {
 		this.comandos = comandos;
 		
@@ -68,14 +89,13 @@ class Escopo {
 	public void processa() throws Exception {
 		String buffer = "";
 		String instruct = "";
-		
-		System.out.println("processando");	
+		int i, j;
 		
 		for (i = 0; i < this.comandos.length(); i++) {
 			j = 0;
 			buffer = "";
-			//buffer = buffer + comandos.charAt(i + j);
-			while (!fimComando(comandos.charAt(i + j)))  { //aqui alimentamos o buffer até achar um fim de comando
+			// Alimenta o buffer até achar um fim de comando
+			while (!Verificacao.fimComando(comandos.charAt(i + j)))  {
 				buffer = buffer + comandos.charAt(i + j);
 				j++;
 			}
@@ -156,20 +176,23 @@ class Escopo {
 				expr = buffer.substring(buffer.indexOf("se") + 2, buffer.length() - 1);
 				
 				// carrega todo o bloco do "se", começando da posição "i" que parou antes da chave "{"
-				blocoSe = carregaBloco(comandos, i);
-							
+				blocoSe = carregaBloco(i);
+				
 				// avança o "i" até o final do bloco do "se" para que o processamento continue no comando seguinte
-				i += blocoSe.length();
+				i += blocoSe.length() + 2;
 				
 				while (Character.isWhitespace(comandos.charAt(i))) {
 					i++;
 				}
+				
 				if (i + 5 < comandos.length() && comandos.substring(i, i + 5).equals("senao")) {
+					i += 5;
+
 					// carrega todo o bloco do "senao", começando da posição "i" que parou depois da chave "}"
-					blocoSeNao = carregaBloco(comandos, i);
+					blocoSeNao = carregaBloco(i);
 				
 					// avança o "i" até o final do bloco do "senao" para que o processamento continue no comando seguinte
-					i += blocoSeNao.length();
+					i += blocoSeNao.length() + 2;
 				}
 				
 				// testa se a condição é verdadeira
@@ -180,37 +203,27 @@ class Escopo {
 					escopoSeNao = new Escopo(blocoSeNao, this.vars);
 					escopoSeNao.processa();
 				}
+			} else if (tokens[0].trim().equals("enquanto")) {
+				Escopo escopoEnquanto = null;
+				String expr, blocoEnquanto = null;
+				
+				expr = buffer.substring(buffer.indexOf("enquanto") + 8, buffer.length() - 1);
+				
+				// carrega todo o bloco do "enquanto", começando da posição "i" que parou antes da chave "{"
+				blocoEnquanto = carregaBloco(i);
+							
+				// avança o "i" até o final do bloco do "enquanto" para que o processamento continue no comando seguinte
+				i += blocoEnquanto.length() + 2;
+				
+				// repete enquanto a condição é verdadeira
+				while (Condicao.avaliaCondicao(this, expr)) {
+					escopoEnquanto = new Escopo(blocoEnquanto, this.vars);
+					escopoEnquanto.processa();
+				}
 			} else {
+				// Expressões de atribuição ex: a := a + 1;
 				Expressao.resolveExpressao(this, buffer);
 			}		
 		}		
-	}
-	
-	public String carregaBloco(String comandos, int inicio) throws Exception {
-		int posicao, chaveInicio, chaveFim;
-		posicao = inicio;
-		while (Character.isWhitespace(comandos.charAt(posicao))) {
-			posicao++;
-		}
-		if (comandos.charAt(posicao) == '{') {
-			inicio = ++posicao;
-			chaveInicio = 1;
-			chaveFim = 0;
-			while (posicao < comandos.length() && chaveInicio > chaveFim) {
-				if (comandos.charAt(posicao) == '{') {
-					chaveInicio++;
-				} else if (comandos.charAt(posicao) == '}') {
-					chaveFim++;
-				}
-				posicao++;
-			}
-			if (chaveInicio == chaveFim) {
-				return comandos.substring(inicio, posicao - 1);
-			} else {
-				throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
-			}
-		} else {
-			throw new IllegalArgumentException("Esparedo caractere de inicio de bloco \"{\"");
-		}				
 	}	
 }

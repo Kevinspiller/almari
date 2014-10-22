@@ -8,13 +8,12 @@ import java.util.*;
 
 class Expressao {
 	public static ArrayList<String> separaTokens(String expr) throws Exception {
-		boolean entreAspa = false;
-		
 		ArrayList<String> tokens;
 		String token = "";
-		
+		boolean entreAspa = false;
+
 		expr = expr.trim();
-		if (expr.length() != 0) {   
+		if (expr.length() != 0) {
 			tokens = new ArrayList<String>();
 
 			entreAspa = false;
@@ -38,7 +37,6 @@ class Expressao {
 			if (entreAspa) {
 				throw new IllegalArgumentException("Terminador da cadeia de caracteres \" não encontrado");
 			}
-			
 			return tokens;
 		} else {
 			return null;
@@ -160,7 +158,6 @@ class Expressao {
 									resultInt = ((Inteiro)var2).getValor();
 								} else {
 									try {
-										System.out.println("inteiro");
 										resultInt = Integer.parseInt(tokens.get(2));
 									} catch (NumberFormatException e) {
 										throw new IllegalArgumentException("numero invalido: " + tokens.get(2));
