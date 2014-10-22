@@ -68,7 +68,9 @@ class Escopo {
 	public void processa() throws Exception {
 		String buffer = "";
 		String instruct = "";
-	
+		
+		System.out.println("processando");	
+		
 		for (i = 0; i < this.comandos.length(); i++) {
 			j = 0;
 			buffer = "";
@@ -78,7 +80,7 @@ class Escopo {
 				j++;
 			}
 			i += j;
-
+			
 			String[] tokens = buffer.trim().split(" +|\t+|\n+|\r+");
 			
 			// tratamento da declaração de variáveis
@@ -97,10 +99,8 @@ class Escopo {
 						} else {
 							declaraVariavel(tokens[1], tokens[2], "");
 							if (tokens.length >= 5) {
-								if (tokens[4].equals(",")) {
-									// declaração de múltiplas variáveis separadas por vírgula
-								} else if (! tokens[4].equals(";")) {
-									throw new IllegalArgumentException("Simbolo " + tokens[4] + " invalido. Esperado , ou ;");
+								if (! tokens[4].equals(";")) {
+									throw new IllegalArgumentException("Simbolo " + tokens[4] + " invalido. Esperado ;");
 								}
 							}
 						}
@@ -113,7 +113,7 @@ class Escopo {
 			} else if (tokens[0].equals("imprima_linha")) {
 				Saida.imprimeLinha(this, buffer.substring(buffer.indexOf("imprima_linha") + 13, buffer.length()));
 			} else if (tokens[0].equals("imprima")) {
-				Saida.imprime(this, buffer.substring(buffer.indexOf("imprima") + 7, buffer.length()));			
+				Saida.imprime(this, buffer.substring(buffer.indexOf("imprima") + 7, buffer.length()));
 			} else if (tokens[0].equals("leia_inteiro")) {
 				int valorInt = Entrada.leInteiro();
 				if (tokens.length > 1) {
@@ -149,20 +149,22 @@ class Escopo {
 						throw new IllegalArgumentException("Variavel " + tokens[1] + " nao declarada");
 					}
 				}
-			} else if (tokens[0].equals("se")) {
+			} else if (tokens[0].trim().equals("se")) {
 				Escopo escopoIf = null;
 				String expr, blocoIf;
 				int inicioBloco, chaveInicio, chaveFim, posicao;
 				
-				inicioBloco = buffer.indexOf("{");
-				expr = buffer.substring(buffer.indexOf("se") + 2, inicioBloco);
-				System.out.println(expr);
+				expr = buffer.substring(buffer.indexOf("se") + 2, buffer.length() - 1);
+				
+				// carrega todo o bloco do "se", começando da posição "i" que parou antes da chave "{"
+				inicioBloco = i;
+
 				posicao = inicioBloco;
-				if (buffer.charAt(posicao) == '{') {
+				if (comandos.charAt(posicao) == '{') {
 					inicioBloco = ++posicao;
 					chaveInicio = 1;
 					chaveFim = 0;
-					while (posicao < buffer.length() && chaveInicio > chaveFim) {
+					while (posicao < comandos.length() && chaveInicio > chaveFim) {
 						if (comandos.charAt(posicao) == '{') {
 							chaveInicio++;
 						} else if (comandos.charAt(posicao) == '}') {
@@ -170,8 +172,9 @@ class Escopo {
 						}
 						posicao++;
 					}
+
 					if (chaveInicio == chaveFim) {
-						blocoIf = buffer.substring(inicioBloco, posicao - 1);
+						blocoIf = comandos.substring(inicioBloco, posicao - 1);
 					} else {
 						throw new IllegalArgumentException("Esperado caractere de fim de bloco \"}\"");
 					}
@@ -189,7 +192,8 @@ class Escopo {
 				} else {
 				
 				}
-				// avança o i até o final do bloco do if para que o processamento continue no comando seguinte
+				// avança o "i" até o final do bloco do "se" para que o processamento continue no comando seguinte
+				System.out.println("i = " + i + " posicao = " + posicao);
 				i += posicao;
 			} else {
 				Expressao.resolveExpressao(this, buffer);
