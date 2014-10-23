@@ -88,22 +88,20 @@ class Escopo {
 	
 	public void processa() throws Exception {
 		String buffer = "";
-		String instruct = "";
-		int i, j;
+		int i;
 		
 		for (i = 0; i < this.comandos.length(); i++) {
-			j = 0;
 			buffer = "";
 			// Alimenta o buffer até achar um fim de comando
-			while (!Verificacao.fimComando(comandos.charAt(i + j)))  {
-				buffer = buffer + comandos.charAt(i + j);
-				j++;
+			while (i < this.comandos.length() && !Verificacao.fimComando(comandos.charAt(i)))  {
+				buffer = buffer + comandos.charAt(i);
+				i++;
 			}
-			i += j;
-			
-			//String[] tokens = buffer.trim().split(" +|\t+|\n+|\r+");
+
 			ArrayList<String> tokens = Expressao.separaTokens(buffer);
-			
+			if (tokens == null || tokens.size() == 0) {
+				break;
+			}
 			// tratamento da declaração de variáveis
 			// funções são tratadas na classe Interpretador pois ficam declaradas fora do escopo
 			if (tokens.get(0).equals("var")) {
@@ -182,7 +180,7 @@ class Escopo {
 				// avança o "i" até o final do bloco do "se" para que o processamento continue no comando seguinte
 				i += blocoSe.length() + 2;
 				
-				while (Character.isWhitespace(comandos.charAt(i))) {
+				while (i < comandos.length() && Character.isWhitespace(comandos.charAt(i))) {
 					i++;
 				}
 				
