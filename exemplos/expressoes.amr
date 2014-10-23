@@ -1,0 +1,10 @@
+func principal {
+	var inteiro a;
+	var inteiro b;
+	
+	a := 1 + 1;
+	b := 3 + a;
+	
+	imprima_linha a;
+	imprima_linha b;
+}

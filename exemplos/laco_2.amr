@@ -1,0 +1,10 @@
+func principal {
+	var inteiro i;
+	
+	i := 0;
+
+	enquanto i < 10 {
+		imprima_linha i;
+		i := i + 1;
+	}
+}

@@ -1,0 +1,21 @@
+func principal {
+	var inteiro a;
+	var inteiro b;
+	
+	b := 8;
+	a := 7;
+	se a > b {
+		imprima_linha "maior";
+	} senao {
+		imprima_linha "menor";
+	}
+	imprima_linha b;
+	
+	a := 0;
+	b := 5;
+	
+	enquanto a < b {
+		a := a + 1;
+		imprima_linha a;
+	}
+}

@@ -1,0 +1,11 @@
+func principal {
+	var inteiro a;
+	
+	a := 1;
+	
+	se a > 1 {
+		imprima_linha "Maior";
+	} senao {
+		imprima_linha "Menor";
+	}
+}

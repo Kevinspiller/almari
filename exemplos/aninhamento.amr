@@ -1,0 +1,24 @@
+func principal {
+	var inteiro i;
+	var inteiro j;
+	
+	i := 0;
+	j := 1;
+	
+	enquanto i < 3 {
+		se i = 0 {
+			imprima_linha "Zero";
+		} senao {
+			imprima_linha "Outro";
+		}
+		i := i + 1;
+	}
+	
+	se i = 3 {
+		se j = 0 {
+			imprima_linha "Ok!";
+		} senao {
+			imprima_linha "Erro";
+		}
+	}
+}
