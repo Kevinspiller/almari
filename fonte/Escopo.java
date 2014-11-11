@@ -183,7 +183,7 @@ class Escopo {
 				while (i < comandos.length() && Character.isWhitespace(comandos.charAt(i))) {
 					i++;
 				}
-				
+
 				if (i + 5 < comandos.length() && comandos.substring(i, i + 5).equals("senao")) {
 					i += 5;
 
@@ -192,8 +192,9 @@ class Escopo {
 				
 					// avança o "i" até o final do bloco do "senao" para que o processamento continue no comando seguinte
 					i += blocoSeNao.length() + 2;
+				} else {
+					i--;
 				}
-				
 				// testa se a condição é verdadeira
 				if (Condicao.avaliaCondicao(this, expr)) {
 					escopoSe = new Escopo(blocoSe, this.vars);
