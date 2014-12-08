@@ -20,7 +20,7 @@ class Interpretador {
 				i += 9;
 				try {
 					bloco = Escopo.carregaBloco(comandos, i);
-					principal = new Escopo(bloco, null);
+					principal = new Escopo(bloco, null, null);
 					principal.processa();
 				} catch (Exception e) {
 					System.out.println(e.getMessage());
