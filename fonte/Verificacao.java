@@ -10,9 +10,7 @@ class Verificacao {
 	}
 
 	public static boolean charValidoNome(char chr) {
-		// retorna se o caractere informado é permitido em um nome de variável ou função
-		// {toDo}
-		//return chr >= 'a' && chr  <= 'z' || chr >= 'A' && chr <= 'Z' || chr >= '0' && chr <= '9' || chr == '_';
+		// retorna se o caractere informado é permitido em um nome de variável ou vetor
 		return Character.isLetterOrDigit(chr) || chr == '_';
 	}
 	
