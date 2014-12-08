@@ -5,14 +5,16 @@
 */
 
 import java.util.*;
+import java.util.ArrayList;
 
 class Escopo {
 	private String comandos;
 	private ArrayList<Variavel> vars;
-	
+	private	ArrayList<Vetor> vectors;
+
 	private void declaraVariavel(String tipo, String nome, String valor) {
 		Variavel var = null;
-		if (! existeVariavel(nome)) {
+		if (!(existeVariavel(nome) || existeVetor(nome))) {
 			if (tipo.equals("inteiro")) {
 				var = new Inteiro(nome, valor.equals("") ? 0 : Integer.parseInt(valor));
 			} else if (tipo.equals("real")) {
@@ -25,6 +27,22 @@ class Escopo {
 			vars.add(var);
 		}
 	}
+
+	private void declaraVetor(String tipo, String nome, int tamanho) {
+		Vetor vector = null;
+		if (!(existeVariavel(nome) || existeVetor(nome))) {
+			if (tipo.equals("inteiro")) {
+				vector = new VetorInteiro(nome, tamanho);
+			} else if (tipo.equals("real")) {
+				vector = new VetorReal(nome, tamanho);
+			} else if (tipo.equals("caractere")) {
+				vector = new VetorCaractere(nome, tamanho);
+			}
+		}
+		if (vector != null) {
+			vectors.add(vector);
+		}
+	}
 	
 	public Variavel buscaVariavel(String nome) {
 		Variavel var;
@@ -32,6 +50,24 @@ class Escopo {
 			var = this.vars.get(i);
 			if (var.getNome().equals(nome)) {
 				return var;
+			}
+		}
+		return null;
+	}
+
+	public Vetor buscaVetor(String nome) {
+		Vetor vector;
+		
+		// Testa se o nome passado tem o índice ainda, e então remove deixando apenas o nome (ex. vetor[1] fica vetor)
+		int bracket = nome.indexOf("[");
+		if (bracket != -1) {
+			nome = nome.substring(0, bracket);
+		}
+		
+		for (int i = 0; i < this.vectors.size(); i++) {
+			vector = this.vectors.get(i);
+			if (vector.getNome().equals(nome)) {
+				return vector;
 			}
 		}
 		return null;
@@ -46,6 +82,16 @@ class Escopo {
 		}
 		return false;
 	}
+	
+	public boolean existeVetor(String nome) {
+		// verifica se já existe uma variável no escopo com o nome informado
+		for (int i = 0; i < this.vectors.size(); i++) {
+			if (this.vectors.get(i).getNome().equals(nome)) {
+				return true;
+			}
+		}
+		return false;
+	}	
 	
 	public static String carregaBloco(String comandos, int inicio) throws Exception {
 		int posicao, chaveInicio, chaveFim;
@@ -75,7 +121,7 @@ class Escopo {
 		}				
 	}	
 	
-	public Escopo(String comandos, ArrayList<Variavel> variaveis) {
+	public Escopo(String comandos, ArrayList<Variavel> variaveis, ArrayList<Vetor> vetores) {
 		this.comandos = comandos;
 		
 		this.vars = new ArrayList<Variavel>(); // Funciona como um array, mas tem método add() para adicionar itens
@@ -84,12 +130,19 @@ class Escopo {
 				this.vars.add(variaveis.get(i));
 			}
 		}
+		this.vectors = new ArrayList<Vetor>();
+		if (vetores != null) {
+			for (int i = 0; i < vetores.size(); i++) {
+				this.vectors.add(vetores.get(i));
+			}
+		}
 	}
 	
 	public void processa() throws Exception {
 		String buffer = "";
 		int i;
-		
+		boolean foundVetor = false;
+
 		for (i = 0; i < this.comandos.length(); i++) {
 			buffer = "";
 			// Alimenta o buffer até achar um fim de comando
@@ -106,21 +159,47 @@ class Escopo {
 			// funções são tratadas na classe Interpretador pois ficam declaradas fora do escopo
 			if (tokens.get(0).equals("var")) {
 				if (tokens.size() >= 2 && Verificacao.tipoValido(tokens.get(1))) {
-					if (tokens.size() >= 3 && Verificacao.nomeValido(tokens.get(2))) {
-						if (tokens.size() >= 4 && tokens.get(3).equals(":=")) {
-							// declaração com atribuição, verifica se o valor que está atribuindo corresponde ao tipo declarado
-							if (tokens.size() >= 5 && Verificacao.valorValido(tokens.get(1), tokens.get(4))) {
-								// declara passando o tipo, nome e valor
-								declaraVariavel(tokens.get(1), tokens.get(2), tokens.get(4));
+					if (tokens.size() >= 3) {
+						try {
+							foundVetor = Vetor.isVetor(tokens.get(2));
+						} catch (VetorIndexException e) {
+							throw new RuntimeException(e.getMessage());
+						}
+						if (foundVetor) {
+							String nome = tokens.get(2).substring(0, tokens.get(2).indexOf("["));
+							if (Verificacao.nomeValido(nome)) {
+								int tamanho;
+								try {
+									tamanho = Vetor.vetorIndexes(tokens.get(2), this);
+								} catch (VetorIndexException e) {
+									throw new RuntimeException(e.getMessage());
+								}
+
+								declaraVetor(tokens.get(1), nome, tamanho);
 							} else {
-								throw new IllegalArgumentException("Esperado valor valido para a variavel " + tokens.get(2) + " do tipo " + tokens.get(1));
+								throw new IllegalArgumentException("Nome invalido para a variavel / vetor");							
 							}
 						} else {
-							declaraVariavel(tokens.get(1), tokens.get(2), "");
-							if (tokens.size() >= 5) {
-								if (! tokens.get(4).equals(";")) {
-									throw new IllegalArgumentException("Simbolo " + tokens.get(4) + " invalido. Esperado ;");
+							// Se não era um vetor, pode ter uma atribuição para a variável
+							if (Verificacao.nomeValido(tokens.get(2))) {
+								if (tokens.size() >= 4 && tokens.get(3).equals(":=")) {
+									// declaração com atribuição, verifica se o valor que está atribuindo corresponde ao tipo declarado
+									if (tokens.size() >= 5 && Verificacao.valorValido(tokens.get(1), tokens.get(4))) {
+										// declara passando o tipo, nome e valor
+										declaraVariavel(tokens.get(1), tokens.get(2), tokens.get(4));
+									} else {
+										throw new IllegalArgumentException("Esperado valor valido para a variavel " + tokens.get(2) + " do tipo " + tokens.get(1));
+									}
+								} else {
+									declaraVariavel(tokens.get(1), tokens.get(2), "");
+									if (tokens.size() >= 5) {
+										if (! tokens.get(4).equals(";")) {
+											throw new IllegalArgumentException("Simbolo " + tokens.get(4) + " invalido. Esperado ;");
+										}
+									}
 								}
+							} else {
+								throw new IllegalArgumentException("Nome invalido para a variavel / vetor");							
 							}
 						}
 					} else {
@@ -197,10 +276,10 @@ class Escopo {
 				}
 				// testa se a condição é verdadeira
 				if (Condicao.avaliaCondicao(this, expr)) {
-					escopoSe = new Escopo(blocoSe, this.vars);
+					escopoSe = new Escopo(blocoSe, this.vars, this.vectors);
 					escopoSe.processa();
 				} else if (blocoSeNao != null) { // se a condição for falsa, executa o "senao", caso existir
-					escopoSeNao = new Escopo(blocoSeNao, this.vars);
+					escopoSeNao = new Escopo(blocoSeNao, this.vars, this.vectors);
 					escopoSeNao.processa();
 				}
 			} else if (tokens.get(0).trim().equals("enquanto")) {
@@ -217,11 +296,11 @@ class Escopo {
 				
 				// repete enquanto a condição é verdadeira
 				while (Condicao.avaliaCondicao(this, expr)) {
-					escopoEnquanto = new Escopo(blocoEnquanto, this.vars);
+					escopoEnquanto = new Escopo(blocoEnquanto, this.vars, this.vectors);
 					escopoEnquanto.processa();
 				}
 			} else {
-				// Expressões de atribuição ex: a := a + 1;
+				// Expressões de atribuição ex: a := a + 1; ou com vetores ex: v[0] := 5;
 				Expressao.resolveExpressao(this, buffer);
 			}		
 		}		

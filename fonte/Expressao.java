@@ -142,20 +142,32 @@ class Expressao {
 	public static void resolveExpressao(Escopo escopo, String expr) throws Exception {
 		Variavel var1 = null;
 		Variavel var2 = null;
+		Vetor vector1 = null;
+		Vetor vector2 = null;
 
 		ArrayList<String> tokens = separaTokens(expr);
 		if (tokens != null) {
-			var1 = escopo.buscaVariavel(tokens.get(0));
-
-			if (var1 != null) {
+			// testa se o primeiro operando é uma variável
+			if ((var1 = escopo.buscaVariavel(tokens.get(0))) != null) {
 				if (tokens.size() > 1 && tokens.get(1).equals(":=")) {
 					switch (var1.getTipo()) {
 						case 'I':
+							// Inteiro
 							int resultInt = 0;
 							if (tokens.size() == 3) {
+								// testa se o segundo operando é uma variável
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultInt = ((Inteiro)var2).getValor();
+								} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+									// vetor
+									int indice;
+									try {
+										indice = Vetor.vetorIndexes(tokens.get(2), escopo);
+									} catch (VetorIndexException e) {
+										throw new RuntimeException(e.getMessage());
+									}
+									resultInt = ((VetorInteiro)vector2).getValor(indice);
 								} else {
 									try {
 										resultInt = Integer.parseInt(tokens.get(2));
@@ -171,11 +183,21 @@ class Expressao {
 							((Inteiro)var1).setValor(resultInt);
 							break;
 						case 'R':
+							// Real
 							double resultReal = 0.0;
 							if (tokens.size() == 3) {
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultReal = ((Real)var2).getValor();
+								} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+									// vetor
+									int indice;
+									try {
+										indice = Vetor.vetorIndexes(tokens.get(2), escopo);
+									} catch (VetorIndexException e) {
+										throw new RuntimeException(e.getMessage());
+									}
+									resultReal = ((VetorReal)vector2).getValor(indice);
 								} else {
 									try {
 										resultReal = Double.parseDouble(tokens.get(2));
@@ -196,6 +218,14 @@ class Expressao {
 								var2 = escopo.buscaVariavel(tokens.get(2));
 								if (var2 != null) {
 									resultCaractere = ((Caractere)var2).getValor();
+								} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+									int indice;
+									try {
+										indice = Vetor.vetorIndexes(tokens.get(2), escopo);
+									} catch (VetorIndexException e) {
+										throw new RuntimeException(e.getMessage());
+									}
+									resultCaractere = ((VetorCaractere)vector2).getValor(indice);
 								} else {
 									resultCaractere = tokens.get(2).substring(1, tokens.get(2).length() - 1);
 								}
@@ -206,6 +236,94 @@ class Expressao {
 							}
 							((Caractere)var1).setValor(resultCaractere);
 							break;
+					}
+				} else {
+					throw new IllegalArgumentException("Esperado operador de atribuicao :=");
+				}
+			} else if ((vector1 = escopo.buscaVetor(tokens.get(0))) != null) {
+				int indice1;
+				try {
+					indice1 = Vetor.vetorIndexes(tokens.get(0), escopo);
+				} catch (VetorIndexException e) {
+					throw new RuntimeException(e.getMessage());
+				}
+				if (tokens.size() > 1 && tokens.get(1).equals(":=")) {
+					if (vector1 instanceof VetorInteiro) {
+						int resultInt = 0;
+						if (tokens.size() == 3) {
+							if ((var2 = escopo.buscaVariavel(tokens.get(2))) != null) {
+								resultInt = ((Inteiro)var2).getValor();
+							} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+								int indice2;
+								try {
+									indice2 = Vetor.vetorIndexes(tokens.get(2), escopo);
+								} catch (VetorIndexException e) {
+									throw new RuntimeException(e.getMessage());
+								}
+								resultInt = ((VetorInteiro)vector2).getValor(indice2);
+							} else {
+								try {
+									resultInt = Integer.parseInt(tokens.get(2));
+								} catch (NumberFormatException e) {
+									throw new IllegalArgumentException("numero invalido: " + tokens.get(2));
+								}
+							}
+						} else if (tokens.size() == 5) {
+							resultInt = resolveInteiro(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
+						} else {
+							throw new IllegalArgumentException("Expressao invalida");
+						}
+						((VetorInteiro)vector1).setValor(indice1, resultInt);
+					} else if (vector1 instanceof VetorReal) {
+							double resultReal = 0.0;
+							if (tokens.size() == 3) {
+								var2 = escopo.buscaVariavel(tokens.get(2));
+								if (var2 != null) {
+									resultReal = ((Real)var2).getValor();
+								} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+									int indice2;
+									try {
+										indice2 = Vetor.vetorIndexes(tokens.get(2), escopo);
+									} catch (VetorIndexException e) {
+										throw new RuntimeException(e.getMessage());
+									}
+									resultReal = ((VetorReal)vector2).getValor(indice2);
+								} else {
+									try {
+										resultReal = Double.parseDouble(tokens.get(2));
+									} catch (NumberFormatException e) {
+										throw new IllegalArgumentException("numero invalido: " + tokens.get(2));
+									}
+								}
+							} else if (tokens.size() == 5) {
+								resultReal = resolveReal(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
+							} else {
+								throw new IllegalArgumentException("Expressao invalida");
+							}
+							((VetorReal)vector1).setValor(indice1, resultReal);
+					} else if (vector1 instanceof VetorCaractere) {
+							String resultCaractere = "";
+							if (tokens.size() == 3) {
+								var2 = escopo.buscaVariavel(tokens.get(2));
+								if (var2 != null) {
+									resultCaractere = ((Caractere)var2).getValor();
+								} else if ((vector2 = escopo.buscaVetor(tokens.get(2))) != null) {
+									int indice2;
+									try {
+										indice2 = Vetor.vetorIndexes(tokens.get(2), escopo);
+									} catch (VetorIndexException e) {
+										throw new RuntimeException(e.getMessage());
+									}
+									resultCaractere = ((VetorCaractere)vector2).getValor(indice2);
+								} else {
+									resultCaractere = tokens.get(2).substring(1, tokens.get(2).length() - 1);
+								}
+							} else if (tokens.size() == 5) {
+								resultCaractere = resolveCaractere(escopo, tokens.get(2), tokens.get(3), tokens.get(4));
+							} else {
+								throw new IllegalArgumentException("Expressao inválida");
+							}
+							((VetorCaractere)vector1).setValor(indice1, resultCaractere);
 					}
 				} else {
 					throw new IllegalArgumentException("Esperado operador de atribuicao :=");
