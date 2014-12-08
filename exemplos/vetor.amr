@@ -1,0 +1,38 @@
+func principal {
+	var inteiro v[10];
+	var real reais[3];
+	var caractere palavras[3];
+	var inteiro i;
+	var inteiro b;
+	i := 0;
+
+	enquanto i < 10 {
+		imprima_linha i;
+		b := i * 2;
+		v[i] := b;
+		i := i + 1;
+	}
+
+	imprima_linha "vetor:";
+	i := 0;
+	enquanto i < 10 {
+		imprima_linha v[i];
+		i := i + 1;
+	}
+	
+	palavras[0] := "Teste";
+	palavras[1] := "impressao";
+	palavras[2] := "vetor";
+	
+	imprima palavras[0];
+	imprima " " palavras[1];
+	imprima_linha " " palavras[2];
+	
+	reais[0] := 3.14159265;
+	reais[1] := 1.41421356;
+	reais[2] := 1.44224957;
+	
+	imprima_linha reais[0];
+	imprima_linha reais[1];
+	imprima_linha reais[2];
+}
