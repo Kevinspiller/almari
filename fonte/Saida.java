@@ -3,7 +3,6 @@
 * Autor: Ricardo Augusto Müller
 * E-mail: ricardoam0908@gmail.com
 */
-
 class Saida {
 
 	public static void imprime(Escopo escopo, String linha){
@@ -23,9 +22,9 @@ class Saida {
 					nomVar += linha.charAt(i);
 					i++;
 				}
-				
-				Variavel var = escopo.buscaVariavel(nomVar);
-				if (var != null) {
+				Vetor vector;
+				Variavel var;
+				if ((var = escopo.buscaVariavel(nomVar)) != null) {
 					switch (var.getTipo()) {
 						case 'I': 
 							System.out.print(((Inteiro)var).getValor());
@@ -36,6 +35,21 @@ class Saida {
 						case 'C': 
 							System.out.print(((Caractere)var).getValor());
 							break;
+					}
+				} else if ((vector = escopo.buscaVetor(nomVar)) != null) {
+					int indice;
+					try {
+						indice = Vetor.vetorIndexes(nomVar + linha.substring(i, linha.indexOf("]", i) + 1), escopo);
+						i += linha.indexOf("]", i) + 1;
+					} catch (VetorIndexException e) {
+						throw new RuntimeException(e.getMessage());
+					}
+					if (vector instanceof VetorInteiro) {
+						System.out.print(((VetorInteiro)vector).getValor(indice));
+					} else if (vector instanceof VetorReal) {
+						System.out.print(((VetorReal)vector).getValor(indice));
+					} else if (vector instanceof VetorCaractere) {
+						System.out.print(((VetorCaractere)vector).getValor(indice));
 					}
 				} else {
 					// não encontrou variável com esse nome, verifica se é um número, tentando converter para double
