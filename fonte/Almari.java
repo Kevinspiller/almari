@@ -1,4 +1,12 @@
 /*
+Trabalho feito com o propósito de fazer o vetor 
+Autores: Kevin Spiller - Leduan Rabaioli
+E-mail: kevin_dms@hotmail.com - ledu07@hotmail.com
+*/
+
+
+
+/*
 * Classe para tratar a leitura do arquivo contendo um programa escrito na linguagem Almari
 * Autor: Maico Smaniotto
 * E-mail: maicosmaniotto@gmail.com
